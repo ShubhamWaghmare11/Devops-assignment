@@ -57,6 +57,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
 
+
       # 8. Build and push backend image
       - name: Build & push backend image
         run: |
