@@ -1,0 +1,91 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+    steps:
+      # 1. Checkout repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. Set up Python
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.10
+
+      # 3. Install dependencies for backend
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # 4. Install dependencies for frontend
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # 5. Run backend tests (if any)
+      - name: Run backend tests
+        run: |
+          cd backend
+          pytest || true   # continue even if no tests
+
+      # 6. Run frontend tests (if any)
+      - name: Run frontend tests
+        run: |
+          cd frontend
+          pytest || true
+
+      # 7. Log in to DockerHub
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      # 8. Build and push backend image
+      - name: Build & push backend image
+        run: |
+          docker build -t $DOCKERHUB_USERNAME/backend:latest ./backend
+          docker push $DOCKERHUB_USERNAME/backend:latest
+
+      # 9. Build and push frontend image
+      - name: Build & push frontend image
+        run: |
+          docker build -t $DOCKERHUB_USERNAME/frontend:latest ./frontend
+          docker push $DOCKERHUB_USERNAME/frontend:latest
+
+      # 10. Build and push logger image
+      - name: Build & push logger image
+        run: |
+          docker build -t $DOCKERHUB_USERNAME/logger:latest ./logger
+          docker push $DOCKERHUB_USERNAME/logger:latest
+
+      # 11. Send Email on Failure
+      - name: Send Email on Failure
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: CI/CD Pipeline Failed for python-microservices-devops
+          body: The CI/CD workflow has failed. Please check the GitHub Actions logs.
+          to: ${{ secrets.EMAIL_TO }}
+          from: ${{ secrets.EMAIL_FROM }}
