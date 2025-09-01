@@ -89,6 +89,7 @@ jobs:
           to: ${{ secrets.MAIL_TO }}
           from: ${{ secrets.MAIL_FROM }}
 
+
       # 12. Send Email on success
       - name: Send Email on Success
         if: success()
