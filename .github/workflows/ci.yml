@@ -75,16 +75,16 @@ jobs:
           docker build -t $DOCKERHUB_USERNAME/logger:latest ./logger
           docker push $DOCKERHUB_USERNAME/logger:latest
 
-      # # 11. Send Email on Failure
-      # - name: Send Email on Failure
-      #   if: failure()
-      #   uses: dawidd6/action-send-mail@v3
-      #   with:
-      #     server_address: smtp.gmail.com
-      #     server_port: 465
-      #     username: ${{ secrets.EMAIL_USER }}
-      #     password: ${{ secrets.EMAIL_PASSWORD }}
-      #     subject: CI/CD Pipeline Failed for python-microservices-devops
-      #     body: The CI/CD workflow has failed. Please check the GitHub Actions logs.
-      #     to: ${{ secrets.EMAIL_TO }}
-      #     from: ${{ secrets.EMAIL_FROM }}
+      # 11. Send Email on Failure
+      - name: Send Email on Failure
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.MAIL_USER }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: CI/CD Pipeline Failed for python-microservices-devops
+          body: The CI/CD workflow has failed. Please check the GitHub Actions logs.
+          to: ${{ secrets.MAIL_TO }}
+          from: ${{ secrets.MAIL_FROM }}
