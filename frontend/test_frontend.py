@@ -19,7 +19,8 @@ def test_index_success(client):
         assert b"Shubham" in response.data  # HTML contains user name
 
 def test_index_backend_failure(client):
-    # Simulate backend failure
+    # Simulate backend failure 
+    
     with patch("frontend.requests.get") as mock_get:
         mock_get.side_effect = Exception("Backend down")
         response = client.get("/")
