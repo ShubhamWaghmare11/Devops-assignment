@@ -41,7 +41,7 @@ jobs:
       # 5. Run backend tests (if any)
       - name: Run backend tests
         run: |
-          cd backenda
+          cd backend
           pytest || true   # continue even if no tests
 
       # 6. Run frontend tests (if any)
