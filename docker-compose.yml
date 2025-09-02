@@ -13,6 +13,7 @@ services:
       - "5433:5432"
 
   backend:
+    container_name: backend
     build: ./backend/
     volumes:
       - shared_logs:/shared/logs
@@ -29,6 +30,7 @@ services:
 
 
   frontend:
+    container_name: frontend
     build: ./frontend/
     depends_on:
       - db
@@ -41,6 +43,7 @@ services:
 
 
   logger:
+    container_name: logger
     build: ./logger/
     depends_on:
       - db
