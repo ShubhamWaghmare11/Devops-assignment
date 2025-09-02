@@ -1,15 +1,20 @@
-resource "aws_instance" "app_instance" {
-  ami           = "ami-0d5d9d301c853a04a"
-  instance_type = var.instance_type
-  key_name      = var.key_name
-  user_data     = file("${path.module}/user_data.sh")
+resource "aws_instance" "app_server" {
+  ami                         = "ami-076a25afeba570620" 
+  instance_type               = var.instance_type
+  key_name                    = var.key_name
+  associate_public_ip_address = var.public_ip
 
-  provisioner "file" {
-    source      = "${path.module}/docker-compose.yml"
-    destination = "/tmp/docker-compose.yml"
-  }
+  user_data = file("user_data.sh")
 
   tags = {
-    Name = "DevOpsAssignmentInstance"
+    Name = "Python-DevOps-App"
   }
+}
+
+output "public_ip" {
+  value = aws_instance.app_server.public_ip
+}
+
+output "public_dns" {
+  value = aws_instance.app_server.public_dns
 }
